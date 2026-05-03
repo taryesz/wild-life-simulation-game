@@ -1,8 +1,12 @@
+package organism.animal
+
+import organism.Coordinates
+import organism.Organism
 import kotlin.random.Random
 
 abstract class Animal : Organism() {
 
-    override fun act() {
+    protected fun move(): Coordinates {
 
         val moveHorizontal = Random.nextBoolean()
 
@@ -15,8 +19,14 @@ abstract class Animal : Organism() {
             dy = Random.nextInt(-1, 2)
         }
 
-        val nextX = this.coordinates.x + dx
-        val nextY = this.coordinates.y + dy
+        return Coordinates(dx, dy)
+
+    }
+
+    protected fun updateCoordinates(newCoordinates: Coordinates) {
+
+        val nextX = this.coordinates.x + newCoordinates.x
+        val nextY = this.coordinates.y + newCoordinates.y
 
         if (nextX in 0 until game!!.boardWidth && nextY in 0 until game!!.boardHeight) {
             this.previousCoordinates.x = this.coordinates.x
@@ -25,6 +35,11 @@ abstract class Animal : Organism() {
             this.coordinates.y = nextY
         }
 
+    }
+
+    override fun act() {
+        val newCoordinates: Coordinates = this.move()
+        this.updateCoordinates(newCoordinates)
     }
 
     override fun collide() {
@@ -47,6 +62,7 @@ abstract class Animal : Organism() {
             else {
 
                 // The organisms of different types start fighting.
+                println("FIGHT!")
 
                 when {
 

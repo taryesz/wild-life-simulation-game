@@ -1,3 +1,5 @@
+package game
+
 object UserInput {
 
     fun get(comparator: (String) -> Boolean): String {

@@ -1,3 +1,5 @@
+package organism
+
 enum class Organisms {
     WOLF,
     SHEEP,

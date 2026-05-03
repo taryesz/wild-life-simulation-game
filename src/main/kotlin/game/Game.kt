@@ -1,6 +1,13 @@
+package game
+
+import organism.animal.Wolf
+import organism.Organism
+import organism.Organisms
+import organism.animal.Fox
+import organism.animal.Sheep
+import organism.animal.Turtle
 import kotlin.random.Random
 import kotlin.system.exitProcess
-import kotlin.text.isDigit
 
 class Game {
 
@@ -102,9 +109,9 @@ class Game {
             repeat(Random.nextInt(2, this.specificOrganismKindLimit)) {
                 when (organismType) {
                     Organisms.WOLF -> organisms.add(Wolf(this))
-                    Organisms.SHEEP -> null
-                    Organisms.FOX -> null
-                    Organisms.TURTLE -> null
+                    Organisms.SHEEP -> organisms.add(Sheep(this))
+                    Organisms.FOX -> organisms.add(Fox(this))
+                    Organisms.TURTLE -> organisms.add(Turtle(this))
                     Organisms.ANTELOPE -> null
                     Organisms.CYBER_SHEEP -> null
                 }
@@ -134,6 +141,8 @@ class Game {
                     isUserInputGameQuit = true
                 }
                 "n" -> {
+                    this.organisms.sortByDescending { it.initiative } /* Organisms with the highest initiative property
+                                                                         make their move firstly */
                     this.organisms.forEach { it.act() }
                     this.organisms.forEach { it.collide() }
                     this.updateOrganisms()

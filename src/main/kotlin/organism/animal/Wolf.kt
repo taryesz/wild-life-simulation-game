@@ -1,3 +1,7 @@
+package organism.animal
+
+import game.Game
+
 class Wolf(game: Game) : Animal() {
 
     init {

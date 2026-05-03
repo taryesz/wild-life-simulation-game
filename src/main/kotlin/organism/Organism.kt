@@ -1,3 +1,6 @@
+package organism
+
+import game.Game
 import kotlin.random.Random
 
 abstract class Organism {
