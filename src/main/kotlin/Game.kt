@@ -19,6 +19,9 @@ class Game {
     var organismsToRemove: MutableList<Organism> = mutableListOf()
         private set
 
+    var collidingOrganisms: MutableMap<Organism, Boolean> = mutableMapOf()
+        private set
+
     private val specificOrganismKindLimit = 4
     private val availableOrganismTypes: List<Organisms> = listOf(
         Organisms.WOLF,
@@ -115,6 +118,7 @@ class Game {
         this.organismsToAdd.clear()
         this.organisms.removeAll(organismsToRemove)
         this.organismsToRemove.clear()
+        this.collidingOrganisms.clear()
     }
 
     private fun performNextAction(): String {

@@ -31,23 +31,45 @@ abstract class Animal : Organism() {
 
         val collidingOrganism: Organism? = this.checkIfCollision()
 
+        // If a collision is detected...
         collidingOrganism?.let {
+
+            // Don't perform the same logic twice for each of the 2 organisms that collide
+            if (this.game!!.collidingOrganisms.contains(collidingOrganism)) return
+            this.game!!.collidingOrganisms[this] = true
+
+            // If the organisms are of the same type, they create a baby
             if (collidingOrganism::class == this::class) {
-                println("LOVE")
+                println("BABY!")
+                val babyOrganism: Organism = this.reproduce()
+                this.game!!.organismsToAdd.add(babyOrganism)
             }
             else {
-                // fight
-                // wygrywa ten kto atakowal (czyli czyje wspolrzedne sie zmienialy)
-                if (this.power == collidingOrganism.power) {
-                    if (this.coordinates.x == this.previousCoordinates.x && this.coordinates.y == this.previousCoordinates.y) {
-                        // usunac this
-                        this.game!!.organismsToRemove.add(this)
+
+                // The organisms of different types start fighting.
+
+                when {
+
+                    // What if the power property is the same?
+                    // The fight is then won by the attacking organism
+                    // (which we can detect based on its previous coordinates:
+                    // - if they stayed the same, the organism IS BEING attacked
+                    // - if they changed, the organism IS ATTACKING another organism).
+                    this.power!! == collidingOrganism.power!! -> {
+                        if (this.coordinates.x == this.previousCoordinates.x && this.coordinates.y == this.previousCoordinates.y) {
+                            this.game!!.organismsToRemove.add(this)
+                        }
+                        else if (collidingOrganism.coordinates.x == this.previousCoordinates.x && collidingOrganism.coordinates.y == this.previousCoordinates.x) {
+                            this.game!!.organismsToRemove.add(collidingOrganism)
+                        }
                     }
-                    else if (collidingOrganism.coordinates.x == this.previousCoordinates.x && collidingOrganism.coordinates.y == this.previousCoordinates.x) {
-                        // usunac organism
-                        this.game!!.organismsToRemove.add(collidingOrganism)
-                    }
+
+                    // The fight is won by the stronger organism.
+                    this.power!! > collidingOrganism.power!! -> this.game!!.organismsToRemove.add(collidingOrganism)
+                    else -> this.game!!.organismsToRemove.add(this)
+
                 }
+
             }
         }
 
