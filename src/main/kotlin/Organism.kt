@@ -14,29 +14,53 @@ organizmem,
  rysowanie() → powoduje narysowanie symbolicznej reprezentacji organizmu
      */
 
-    val power: Int? = null
-    val initiative: Int? = null
-    var coordinates = IntArray(2)
+    var power: Int? = null
+    var initiative: Int? = null
+    var coordinates = Coordinates(null, null)
+    var previousCoordinates = Coordinates(null, null)
     var game: Game? = null
-    var icon: String? = null
+    protected var icon: String? = null
 
     abstract fun act()
     abstract fun collide()
 
-    fun setInitialPosition() {
-        val x = Random.nextInt(1, game?.boardWidth ?: 0)
-        this.coordinates[0] = x
+    abstract fun reproduce(): Organism
 
-        val y = Random.nextInt(1, game?.boardHeight ?: 0)
-        this.coordinates[1] = y
+    protected fun spawn() {
+        do {
+            val x = Random.nextInt(0, game!!.boardWidth)
+            val y = Random.nextInt(0, game!!.boardHeight)
+            this.coordinates.set(x, y)
+            this.previousCoordinates.set(x, y)
+            // println("Wygenerowano nowy organizm na $x, $y.")
+        } while (checkIfCollision() is Organism)
     }
 
-    fun draw(x: Int, y: Int): Boolean {
-        if (coordinates[0] == x && coordinates[1] == y) {
-            print(this.icon ?: "?")
-            return true
+    fun draw() {
+        print(" ${this.icon ?: "?"} ")
+    }
+
+    protected fun checkIfCollision(): Organism? {
+        for (otherOrganism in this.game!!.organisms) {
+            if (this !== otherOrganism &&
+                this.coordinates.x == otherOrganism.coordinates.x &&
+                this.coordinates.y == otherOrganism.coordinates.y) {
+                // println("Znaleziono kolizje ${this.coordinates.x}, ${this.coordinates.y}.")
+                return otherOrganism
+            }
         }
-        return false
+        // println("Nie znaleziono kolizji.")
+        return null
+    }
+}
+
+class Coordinates(initX: Int? = null, initY: Int? = null) {
+    var x = initX ?: -1
+    var y = initY ?: -1
+
+    fun set(x: Int, y: Int) {
+        this.x = x
+        this.y = y
     }
 
 }

@@ -1,4 +1,6 @@
 import kotlin.random.Random
+import kotlin.system.exitProcess
+import kotlin.text.isDigit
 
 class Game {
 
@@ -8,7 +10,15 @@ class Game {
     var boardHeight: Int = 0
         private set
 
-    private var organisms: MutableList<Organism> = mutableListOf()
+    var organisms: MutableList<Organism> = mutableListOf()
+        private set
+
+    var organismsToAdd: MutableList<Organism> = mutableListOf()
+        private set
+
+    var organismsToRemove: MutableList<Organism> = mutableListOf()
+        private set
+
     private val specificOrganismKindLimit = 4
     private val availableOrganismTypes: List<Organisms> = listOf(
         Organisms.WOLF,
@@ -21,53 +31,31 @@ class Game {
 
     fun start() {
         // get user input - board size
-        this.getTotalBoardSize()
+        this.getTotalBoardSize().also { println("Utworzono plansze.") }
 
         // generate the organisms
-        this.generateOrganisms()
+        this.spawnOrganisms().also { println("Wygenerowano organizmy.") }
 
         // show the board and all the organisms
-        while (true) {
-
-            for (org in organisms) {
-                println("$org: x=${org.coordinates[0]}, y=${org.coordinates[1]}")
-            }
-
-            this.showBoard()
-
-            println("Type 'q' to quit the game, 'n' to generate a new round.")
-            val userInput = readln()
-
-            when (userInput) {
-                "" -> println("Please enter your input.")
-                "q" -> {
-                    println("Quitting the game...")
-                    break
-                }
-                "n" -> continue // TODO: next round generation
-                else -> println("Invalid input. Please enter a valid number.")
-            }
-
-        }
+        this.draw()
 
         // set a key that "makes a move"
     }
-    fun stop() {}
-    fun load() {}
-    fun save() {}
 
     private fun getSingularBoardSize(): Int {
-        while(true) {
 
-            val userInput = readln()
-
+        val size = UserInput.get { userInput ->
+            var isSatisfactoryValue = false
             when {
                 userInput == "" -> println("Please enter your input.")
-                userInput.all { it.isDigit() } -> return userInput.toInt()
+                userInput.all { it.isDigit() } -> isSatisfactoryValue = true
                 else -> println("Invalid input. Please enter a valid number.")
             }
-
+            isSatisfactoryValue
         }
+
+        return size.toInt()
+
     }
 
     private fun getTotalBoardSize() {
@@ -80,61 +68,32 @@ class Game {
         this.boardHeight = getSingularBoardSize()
     }
 
-    private fun showBoard() {
+    private fun drawBoard() {
 
-        val boardWidthInAsciiSymbols = (this.boardWidth * 3) + (this.boardWidth + 1)
-        val boardHeightInAsciiSymbols = (this.boardHeight * 1) + (this.boardHeight + 1)
+        val separator = "+---".repeat(boardWidth) + "+"
 
-        var isCrossTurn = true
-        var hyphenCounter = 0
-        var spaceCounter = 0
+        for (y in 0 until boardHeight) {
 
-        for (verticalSymbol in 1..boardHeightInAsciiSymbols) {
+            println(separator)
 
-            for (horizontalSymbol in 1..boardWidthInAsciiSymbols) {
-                if (isCrossTurn) {
-                    print(if (verticalSymbol % 2 != 0) "+" else "|")
-                    isCrossTurn = false
-                    continue
+            for (x in 0 until boardWidth) {
+                print("|")
+
+                val organism = organisms.find { it.coordinates.x == x && it.coordinates.y == y }
+
+                if (organism != null) {
+                    organism.draw()
+                } else {
+                    print("   ")
                 }
-
-                if (verticalSymbol % 2 != 0) {
-                    print("-")
-                }
-                else {
-                    ++spaceCounter
-                    if (spaceCounter == 2) {
-                        var foundOrganism = false
-                        for (organism in organisms) {
-                            foundOrganism = organism.draw(horizontalSymbol.floorDiv(3) , verticalSymbol.floorDiv(2))
-                            if (foundOrganism) break
-                        }
-                        if (!foundOrganism) print(" ")
-                    }
-                    else {
-                        print(" ")
-                        if (spaceCounter == 3) spaceCounter = 0
-                    }
-                }
-
-                hyphenCounter++
-                if (hyphenCounter % 3 == 0) isCrossTurn = true
             }
-
-            println()
-            isCrossTurn = true
-
+            println("|")
         }
 
+        println(separator)
     }
 
-    // +---+---+---+        1 5 9 13
-    // |   |   |   |        2
-    // +---+---+---+        3
-    // |   |   |   |        4
-    // +---+---+---+        5
-
-    private fun generateOrganisms() {
+    private fun spawnOrganisms() {
 
         for (organismType in this.availableOrganismTypes) {
             repeat(Random.nextInt(2, this.specificOrganismKindLimit)) {
@@ -149,6 +108,49 @@ class Game {
             }
         }
 
+    }
+
+    private fun updateOrganisms() {
+        this.organisms.addAll(organismsToAdd)
+        this.organismsToAdd.clear()
+        this.organisms.removeAll(organismsToRemove)
+        this.organismsToRemove.clear()
+    }
+
+    private fun performNextAction(): String {
+
+        println("Type 'q' to quit the game, 'n' to generate a new round.")
+
+        return UserInput.get { userInput ->
+            var isUserInputGameQuit = false
+            when (userInput) {
+                "" -> println("Please enter your input.")
+                "q" -> {
+                    println("Quitting the game...")
+                    isUserInputGameQuit = true
+                }
+                "n" -> {
+                    this.organisms.forEach { it.act() }
+                    this.organisms.forEach { it.collide() }
+                    this.updateOrganisms()
+                    this.draw()
+                }
+                else -> println("Invalid input. Please enter a valid number.")
+            }
+            isUserInputGameQuit
+        }
+
+    }
+
+    private fun draw() {
+        while (true) {
+
+            this.drawBoard()
+
+            val actionResult = this.performNextAction()
+            if (actionResult == "q") exitProcess(0)  // the game finished
+
+        }
     }
 
 }
