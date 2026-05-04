@@ -2,20 +2,9 @@ package organism
 
 import game.Game
 import kotlin.random.Random
+import game.Logger
 
 abstract class Organism {
-    /*
-    podstawowe pola:
- siła
- inicjatywa
- położenie (x,y).
- świat - referencja do świata w którym znajduje się organizm
-podstawowe metody:
- akcja() → określa zachowanie organizmu w trakcie tury,
- kolizja() → określa zachowanie organizmu w trakcie kontaktu/zderzenia z innym
-organizmem,
- rysowanie() → powoduje narysowanie symbolicznej reprezentacji organizmu
-     */
 
     var power: Int? = null
     var initiative: Int? = null
@@ -30,13 +19,15 @@ organizmem,
     abstract fun reproduce(): Organism
 
     protected fun spawn() {
+        var x: Int
+        var y: Int
         do {
-            val x = Random.nextInt(0, game!!.boardWidth)
-            val y = Random.nextInt(0, game!!.boardHeight)
+            x = Random.nextInt(0, game!!.boardWidth)
+            y = Random.nextInt(0, game!!.boardHeight)
             this.coordinates.set(x, y)
             this.previousCoordinates.set(x, y)
-            // println("Wygenerowano nowy organizm na $x, $y.")
         } while (checkIfCollision() is Organism)
+        Logger.log("spawned @($x,$y).", this::class)
     }
 
     fun draw() {

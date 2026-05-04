@@ -1,5 +1,7 @@
 package organism.animal
 
+import game.Logger
+import organism.CollisionSpecificity
 import organism.Coordinates
 import organism.Organism
 import kotlin.random.Random
@@ -19,21 +21,23 @@ abstract class Animal : Organism() {
             dy = Random.nextInt(-1, 2)
         }
 
-        return Coordinates(dx, dy)
+        val nx = this.coordinates.x + dx
+        val ny = this.coordinates.y + dy
+
+        return Coordinates(nx, ny)
 
     }
 
-    protected fun updateCoordinates(newCoordinates: Coordinates) {
+     fun updateCoordinates(newCoordinates: Coordinates) {
 
-        val nextX = this.coordinates.x + newCoordinates.x
-        val nextY = this.coordinates.y + newCoordinates.y
+         if (newCoordinates.x in 0 until game!!.boardWidth && newCoordinates.y in 0 until game!!.boardHeight) {
+             this.previousCoordinates.x = this.coordinates.x
+             this.previousCoordinates.y = this.coordinates.y
+             this.coordinates.x = newCoordinates.x
+             this.coordinates.y = newCoordinates.y
+         }
 
-        if (nextX in 0 until game!!.boardWidth && nextY in 0 until game!!.boardHeight) {
-            this.previousCoordinates.x = this.coordinates.x
-            this.previousCoordinates.y = this.coordinates.x
-            this.coordinates.x = nextX
-            this.coordinates.y = nextY
-        }
+         Logger.log("moved to (${this.coordinates.x},${this.coordinates.y}).", this::class)
 
     }
 
@@ -55,14 +59,13 @@ abstract class Animal : Organism() {
 
             // If the organisms are of the same type, they create a baby
             if (collidingOrganism::class == this::class) {
-                println("BABY!")
+                Logger.log("making a baby!", this::class)
                 val babyOrganism: Organism = this.reproduce()
                 this.game!!.organismsToAdd.add(babyOrganism)
             }
             else {
 
                 // The organisms of different types start fighting.
-                println("FIGHT!")
 
                 when {
 
@@ -73,16 +76,26 @@ abstract class Animal : Organism() {
                     // - if they changed, the organism IS ATTACKING another organism).
                     this.power!! == collidingOrganism.power!! -> {
                         if (this.coordinates.x == this.previousCoordinates.x && this.coordinates.y == this.previousCoordinates.y) {
+                            Logger.log("is being attacked by ${collidingOrganism::class.simpleName.toString().uppercase()}!", this::class)
                             this.game!!.organismsToRemove.add(this)
                         }
                         else if (collidingOrganism.coordinates.x == this.previousCoordinates.x && collidingOrganism.coordinates.y == this.previousCoordinates.x) {
+                            Logger.log("attacks a ${collidingOrganism::class.simpleName.toString().uppercase()}!", this::class)
                             this.game!!.organismsToRemove.add(collidingOrganism)
                         }
                     }
 
                     // The fight is won by the stronger organism.
-                    this.power!! > collidingOrganism.power!! -> this.game!!.organismsToRemove.add(collidingOrganism)
-                    else -> this.game!!.organismsToRemove.add(this)
+                    this.power!! > collidingOrganism.power!! -> {
+                        Logger.log("attacks a ${collidingOrganism::class.simpleName.toString().uppercase()}!", this::class)
+                        if (collidingOrganism is CollisionSpecificity) collidingOrganism.useCollisionSpecificity(this)
+                        else this.game!!.organismsToRemove.add(collidingOrganism)
+                    }
+                    else -> {
+                        Logger.log("is being attacked by ${collidingOrganism::class.simpleName.toString().uppercase()}!", this::class)
+                        if (this is CollisionSpecificity) this.useCollisionSpecificity(collidingOrganism)
+                        else this.game!!.organismsToRemove.add(this)
+                    }
 
                 }
 

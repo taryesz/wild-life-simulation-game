@@ -1,6 +1,7 @@
 package organism.animal
 
 import game.Game
+import game.Logger
 import organism.ActionSpecificity
 import organism.Coordinates
 
@@ -29,22 +30,23 @@ class Fox(game: Game) : Animal(), ActionSpecificity {
             for (organism in this.game!!.organisms) {
                 if (this !== organism &&
                     organism.coordinates.x == newCoordinates.x &&
-                    organism.coordinates.y == newCoordinates.y)
+                    organism.coordinates.y == newCoordinates.y &&
+                    organism.power!! > this.power!!)
                 {
                     danger = true
-                    println("FOX - found danger...")
                     break
                 }
             }
 
             if (danger) {
-                println("FOX - generating new move...")
+                Logger.log("found danger at a new spot (${newCoordinates.x}, ${newCoordinates.y})... moving somewhere else...", this::class)
                 val newCoordinates: Coordinates = this.move()
                 useActionSpecificity(newCoordinates)
+                return
             }
 
-            println("FOX - found SAFE place!")
             this.updateCoordinates(newCoordinates)
+
         }
 
     }
