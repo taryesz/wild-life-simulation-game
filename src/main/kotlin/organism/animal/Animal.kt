@@ -8,7 +8,7 @@ import kotlin.random.Random
 
 abstract class Animal : Organism() {
 
-    protected fun move(): Coordinates {
+    protected fun move(baseX: Int = this.coordinates.x, baseY: Int = this.coordinates.y): Coordinates {
 
         val moveHorizontal = Random.nextBoolean()
 
@@ -16,13 +16,13 @@ abstract class Animal : Organism() {
         var dy = 0
 
         if (moveHorizontal) {
-            dx = Random.nextInt(-1, 2)
+            dx = if (Random.nextBoolean()) 1 else -1
         } else {
-            dy = Random.nextInt(-1, 2)
+            dy = if (Random.nextBoolean()) 1 else -1
         }
 
-        val nx = this.coordinates.x + dx
-        val ny = this.coordinates.y + dy
+        val nx = baseX + dx
+        val ny = baseY + dy
 
         return Coordinates(nx, ny)
 
@@ -35,6 +35,11 @@ abstract class Animal : Organism() {
              this.previousCoordinates.y = this.coordinates.y
              this.coordinates.x = newCoordinates.x
              this.coordinates.y = newCoordinates.y
+         }
+         else {
+             // Make an organism move again if the previously generated coordinates are invalid
+             this.updateCoordinates(this.move())
+             return
          }
 
          Logger.log("moved to (${this.coordinates.x},${this.coordinates.y}).", this::class)

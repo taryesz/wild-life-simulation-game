@@ -3,6 +3,7 @@ package game
 import organism.animal.Wolf
 import organism.Organism
 import organism.Organisms
+import organism.animal.Antelope
 import organism.animal.Fox
 import organism.animal.Sheep
 import organism.animal.Turtle
@@ -106,16 +107,16 @@ class Game {
     private fun spawnOrganisms() {
 
         for (organismType in this.availableOrganismTypes) {
-            repeat(Random.nextInt(2, this.specificOrganismKindLimit)) {
+            //repeat(Random.nextInt(2, this.specificOrganismKindLimit)) {
                 when (organismType) {
                     Organisms.WOLF -> organisms.add(Wolf(this))
-                    Organisms.SHEEP -> organisms.add(Sheep(this))
-                    Organisms.FOX -> organisms.add(Fox(this))
-                    Organisms.TURTLE -> organisms.add(Turtle(this))
-                    Organisms.ANTELOPE -> null
+                    Organisms.SHEEP -> null//organisms.add(Sheep(this))
+                    Organisms.FOX -> null//organisms.add(Fox(this))
+                    Organisms.TURTLE -> null//organisms.add(Turtle(this))
+                    Organisms.ANTELOPE -> organisms.add(Antelope(this))
                     Organisms.CYBER_SHEEP -> null
                 }
-            }
+            //}
         }
 
     }
