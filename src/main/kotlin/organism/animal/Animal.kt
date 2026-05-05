@@ -1,14 +1,14 @@
 package organism.animal
 
+import game.Coordinates
 import game.Logger
-import organism.Coordinates
 import organism.Organism
 
 abstract class Animal : Organism() {
 
      fun updateCoordinates(newCoordinates: Coordinates) {
 
-         if (newCoordinates.x in 0 until game!!.boardWidth && newCoordinates.y in 0 until game!!.boardHeight) {
+         if (newCoordinates.x in 0 until game!!.world.boardWidth!! && newCoordinates.y in 0 until game!!.world.boardHeight!!) {
              this.previousCoordinates.x = this.coordinates.x
              this.previousCoordinates.y = this.coordinates.y
              this.coordinates.x = newCoordinates.x

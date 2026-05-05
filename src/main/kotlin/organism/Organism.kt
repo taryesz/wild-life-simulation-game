@@ -1,8 +1,9 @@
 package organism
 
+import game.Coordinates
 import game.Game
-import kotlin.random.Random
 import game.Logger
+import kotlin.random.Random
 
 abstract class Organism {
 
@@ -76,8 +77,8 @@ abstract class Organism {
     abstract fun reproduce(): Organism
 
     protected fun checkCoordinatesInvalidity(coordinates: Coordinates): Boolean {
-        return coordinates.x < 0 || coordinates.x >= this.game!!.boardWidth ||
-                coordinates.y < 0 || coordinates.y >= this.game!!.boardHeight
+        return coordinates.x < 0 || coordinates.x >= this.game!!.world.boardWidth!! ||
+                coordinates.y < 0 || coordinates.y >= this.game!!.world.boardHeight!!
     }
 
     protected fun spawn(baseX: Int?, baseY: Int?) {
@@ -106,8 +107,8 @@ abstract class Organism {
                     } while (checkCoordinatesInvalidity(res))
                     res
                 } else {
-                    val rx = Random.nextInt(0, game!!.boardWidth)
-                    val ry = Random.nextInt(0, game!!.boardHeight)
+                    val rx = Random.nextInt(0, game!!.world.boardWidth!!)
+                    val ry = Random.nextInt(0, game!!.world.boardHeight!!)
                     Coordinates(rx, ry)
                 }
 
@@ -140,7 +141,7 @@ abstract class Organism {
         return null
     }
 
-    protected fun move(baseX: Int = this.coordinates.x, baseY: Int = this.coordinates.y): Coordinates {
+    protected open fun move(baseX: Int = this.coordinates.x, baseY: Int = this.coordinates.y): Coordinates {
 
         val moveHorizontal = Random.nextBoolean()
 
@@ -158,17 +159,6 @@ abstract class Organism {
 
         return Coordinates(nx, ny)
 
-    }
-
-}
-
-class Coordinates(initX: Int? = null, initY: Int? = null) {
-    var x = initX ?: -1
-    var y = initY ?: -1
-
-    fun set(x: Int, y: Int) {
-        this.x = x
-        this.y = y
     }
 
 }

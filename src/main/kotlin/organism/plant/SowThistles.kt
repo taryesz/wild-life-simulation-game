@@ -3,7 +3,7 @@ package organism.plant
 import game.Game
 import game.Logger
 import organism.ActionSpecificity
-import organism.Coordinates
+import game.Coordinates
 import kotlin.random.Random
 
 class SowThistles(
@@ -25,16 +25,15 @@ class SowThistles(
     }
 
     override fun useActionSpecificity(newCoordinates: Coordinates?) {
-        val probability = 0.05
+        val probability = 0.005
 
-        repeat(3) {
-            if (Random.nextDouble() < probability) {
-                Logger.log("multiplying...", this::class)
-                val babyOrganism: SowThistles = this.reproduce()
-                this.game!!.organismsToAdd.add(babyOrganism)
-                return
-            }
+        if (Random.nextDouble() < probability) {
+            Logger.log("multiplying...", this::class)
+            val babyOrganism: SowThistles = this.reproduce()
+            this.game!!.organismsToAdd.add(babyOrganism)
+            return
         }
+
     }
 
     override fun act() {

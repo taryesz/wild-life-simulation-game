@@ -1,10 +1,10 @@
 package organism.animal
 
+import game.Coordinates
 import game.Game
 import game.Logger
 import organism.ActionSpecificity
 import organism.CollisionSpecificity
-import organism.Coordinates
 import organism.Organism
 import kotlin.random.Random
 

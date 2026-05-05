@@ -3,16 +3,22 @@ package game
 import organism.animal.Wolf
 import organism.Organism
 import organism.Organisms
+import organism.animal.Antelope
+import organism.animal.CyberSheep
+import organism.animal.Fox
+import organism.animal.Sheep
+import organism.animal.Turtle
 import organism.plant.Belladonna
+import organism.plant.Grass
+import organism.plant.Guarana
+import organism.plant.Heracleum
+import organism.plant.SowThistles
+import kotlin.random.Random
 import kotlin.system.exitProcess
 
 class Game {
 
-    var boardWidth: Int = 0
-        private set
-
-    var boardHeight: Int = 0
-        private set
+    val world: Board = Board(this)
 
     var organisms: MutableList<Organism> = mutableListOf()
         private set
@@ -26,93 +32,50 @@ class Game {
     var collidingOrganisms: MutableMap<Organism, Boolean> = mutableMapOf()
         private set
 
-    private val specificOrganismKindLimit = 4
+    private val maxSpecificOrganismCount = 4
+    private val minSpecificOrganismCount = 2
 
     fun start() {
-        // get user input - board size
-        this.getTotalBoardSize().also { println("Utworzono plansze.") }
 
-        // generate the organisms
-        this.spawnOrganisms().also { println("Wygenerowano organizmy.") }
+        Logger.log("Starting the game...", this::class)
 
-        // show the board and all the organisms
-        this.draw()
-
-        // set a key that "makes a move"
-    }
-
-    private fun getSingularBoardSize(): Int {
-
-        val size = UserInput.get { userInput ->
-            var isSatisfactoryValue = false
-            when {
-                userInput == "" -> println("Please enter your input.")
-                userInput.all { it.isDigit() } -> isSatisfactoryValue = true
-                else -> println("Invalid input. Please enter a valid number.")
-            }
-            isSatisfactoryValue
+        // Get a board size from the user.
+        this.world.readSize().also {
+            Logger.log("Successfully read the board size.", this::class)
         }
 
-        return size.toInt()
-
-    }
-
-    private fun getTotalBoardSize() {
-        println(">>> Type the board size <<<")
-
-        println("A - the width of the board")
-        this.boardWidth = getSingularBoardSize()
-
-        println("B - the height of the board")
-        this.boardHeight = getSingularBoardSize()
-    }
-
-    private fun drawBoard() {
-
-        val separator = "+---".repeat(boardWidth) + "+"
-
-        for (y in 0 until boardHeight) {
-
-            println(separator)
-
-            for (x in 0 until boardWidth) {
-                print("|")
-
-                val organism = organisms.find { it.coordinates.x == x && it.coordinates.y == y }
-
-                if (organism != null) {
-                    organism.draw()
-                } else {
-                    print("   ")
-                }
-            }
-            println("|")
+        // Generate all organisms.
+        this.spawnOrganisms().also {
+            Logger.log("Successfully generated all organisms.", this::class)
         }
 
-        println(separator)
+        // Play the game:
+        // - draw the board,    TODO: ???
+        // - get a command from the user.
+        this.play()
+
     }
 
     private fun spawnOrganisms() {
 
         for (organismType in Organisms.entries) {
-            // repeat(Random.nextInt(2, this.specificOrganismKindLimit)) {
-
-            repeat(1) {
+            repeat(Random.nextInt(this.minSpecificOrganismCount, this.maxSpecificOrganismCount)) {
                 when (organismType) {
 
                     // Animals
                     Organisms.WOLF -> organisms.add(Wolf(this))
-                    Organisms.SHEEP -> null//organisms.add(Sheep(this))
-                    Organisms.FOX -> null//organisms.add(Fox(this))
-                    Organisms.TURTLE -> null//organisms.add(Turtle(this))
-                    Organisms.ANTELOPE -> null//organisms.add(Antelope(this))
-                    Organisms.CYBER_SHEEP -> null
+                    Organisms.SHEEP -> organisms.add(Sheep(this))
+                    Organisms.FOX -> organisms.add(Fox(this))
+                    Organisms.TURTLE -> organisms.add(Turtle(this))
+                    Organisms.ANTELOPE -> organisms.add(Antelope(this))
+                    Organisms.CYBER_SHEEP -> organisms.add(CyberSheep(this))
 
                     // Plants
-                    Organisms.GRASS -> null//organisms.add(Grass(this))
-                    Organisms.SOW_THISTLES -> null//organisms.add(SowThistles(this))
-                    Organisms.GUARANA -> null//organisms.add(Guarana(this))
+                    Organisms.GRASS -> organisms.add(Grass(this))
+                    Organisms.SOW_THISTLES -> organisms.add(SowThistles(this))
+                    Organisms.GUARANA -> organisms.add(Guarana(this))
                     Organisms.BELLADONNA -> organisms.add(Belladonna(this))
+                    Organisms.HERACLEUM -> organisms.add(Heracleum(this))
 
                 }
             }
@@ -120,50 +83,67 @@ class Game {
 
     }
 
-    private fun updateOrganisms() {
-        this.organisms.addAll(organismsToAdd)
-        this.organismsToAdd.clear()
-        this.organisms.removeAll(organismsToRemove)
-        this.organismsToRemove.clear()
-        this.collidingOrganisms.clear()
+    private fun play() {
+
+        this.world.draw()
+
+        while (true) {
+            val userCommand = this.readUserCommand()
+            if (userCommand == UserCommands.QUIT_GAME.keyboardKey) exitProcess(0)  // The game closes.
+        }
+
     }
 
-    private fun performNextAction(): String {
+    private fun readUserCommand(): String {
 
-        println("Type 'q' to quit the game, 'n' to generate a new round.")
+        Logger.log(
+            "Type '${UserCommands.QUIT_GAME.keyboardKey}' to quit the game, " +
+                    "'${UserCommands.NEXT_ITERATION.keyboardKey}' to perform an iteration.", this::class)
 
+        // Read the user's command input and check if there was a "close the game" request.
         return UserInput.get { userInput ->
             var isUserInputGameQuit = false
             when (userInput) {
-                "" -> println("Please enter your input.")
-                "q" -> {
-                    println("Quitting the game...")
+                UserCommands.EMPTY.keyboardKey -> {
+                    Logger.log("Please enter your input.", this::class)
+                }
+                UserCommands.QUIT_GAME.keyboardKey -> {
+                    Logger.log("Quitting the game...", this::class)
                     isUserInputGameQuit = true
                 }
-                "n" -> {
-                    this.organisms.sortByDescending { it.initiative } /* Organisms with the highest initiative property
-                                                                         make their move firstly */
-                    this.organisms.forEach { it.act() }
-                    this.organisms.forEach { it.collide() }
-                    this.updateOrganisms()
-                    this.draw()
+                UserCommands.NEXT_ITERATION.keyboardKey -> {
+                    Logger.log("Performing next iteration...", this::class)
+                    this.performIteration()
                 }
-                else -> println("Invalid input. Please enter a valid number.")
+                else -> Logger.log("Invalid input. Please try again.", this::class)
             }
             isUserInputGameQuit
         }
 
     }
 
-    private fun draw() {
-        while (true) {
+    private fun performIteration() {
 
-            this.drawBoard()
+        // The first organisms to make a move are the ones with the highest "initiative" property - sort accordingly.
+        this.organisms.sortByDescending { it.initiative }
 
-            val actionResult = this.performNextAction()
-            if (actionResult == "q") exitProcess(0)  // the game finished
+        this.organisms.forEach { it.act() }     // Each organism moves (and optionally does something else).
+        this.organisms.forEach { it.collide() } // The game checks the collisions among the organisms and solves them.
+        this.updateOrganisms()                  // Actually change the organisms' properties after each iteration.
+        this.world.draw()
 
-        }
+    }
+
+    private fun updateOrganisms() {
+
+        this.organisms.addAll(organismsToAdd)           // Add every new "baby organism".
+        this.organismsToAdd.clear()
+        this.organisms.removeAll(organismsToRemove)     // Remove every killed organism.
+        this.organismsToRemove.clear()
+
+        // This map stores the collision data for each organism - we need to clear it after each iteration.
+        this.collidingOrganisms.clear()
+
     }
 
 }

@@ -1,10 +1,10 @@
 package organism.plant
 
+import game.Coordinates
 import game.Game
 import game.Logger
 import organism.ActionSpecificity
 import organism.CollisionSpecificity
-import organism.Coordinates
 import organism.Organism
 import organism.animal.Animal
 import organism.animal.CyberSheep
@@ -31,7 +31,10 @@ class Heracleum(
         if (collidingOrganism !is CyberSheep) {
             Logger.log("has no mercy and kills ${collidingOrganism::class.simpleName.toString().uppercase()}!", this::class)
             this.game!!.organismsToRemove.add(collidingOrganism)
+            return
         }
+        // a cyber sheep kills the heracleum
+        this.game!!.organismsToRemove.add(this)
     }
 
     override fun useActionSpecificity(newCoordinates: Coordinates?) {

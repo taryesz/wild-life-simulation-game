@@ -3,7 +3,7 @@ package organism.animal
 import game.Game
 import game.Logger
 import organism.ActionSpecificity
-import organism.Coordinates
+import game.Coordinates
 
 class Fox(
     game: Game,
