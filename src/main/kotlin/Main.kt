@@ -1,5 +1,7 @@
 import game.Game
+import game.GameLauncher
 
 fun main() {
-    Game().start()
+    val game: GameLauncher = Game()
+    game.start()
 }

@@ -16,7 +16,7 @@ import organism.plant.SowThistles
 import kotlin.random.Random
 import kotlin.system.exitProcess
 
-class Game {
+class Game: GameLauncher {
 
     val world: Board = Board(this)
 
@@ -35,7 +35,7 @@ class Game {
     private val maxSpecificOrganismCount = 4
     private val minSpecificOrganismCount = 2
 
-    fun start() {
+    override fun start() {
 
         Logger.log("Starting the game...", this::class)
 
@@ -50,8 +50,8 @@ class Game {
         }
 
         // Play the game:
-        // - draw the board,    TODO: ???
-        // - get a command from the user.
+        // - draw the board,
+        // - get a command from the user -> perform an according action.
         this.play()
 
     }
@@ -59,6 +59,8 @@ class Game {
     private fun spawnOrganisms() {
 
         for (organismType in Organisms.entries) {
+
+            // Generate a random number of each organism.
             repeat(Random.nextInt(this.minSpecificOrganismCount, this.maxSpecificOrganismCount)) {
                 when (organismType) {
 
@@ -79,6 +81,7 @@ class Game {
 
                 }
             }
+
         }
 
     }
