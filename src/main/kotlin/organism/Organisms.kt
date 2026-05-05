@@ -7,4 +7,9 @@ enum class Organisms {
     TURTLE,
     ANTELOPE,
     CYBER_SHEEP,
+    GRASS,
+    SOW_THISTLES,
+    GUARANA,
+    BELLADONNA,
+    HERACLEUM
 }

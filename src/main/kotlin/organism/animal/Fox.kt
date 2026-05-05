@@ -5,18 +5,22 @@ import game.Logger
 import organism.ActionSpecificity
 import organism.Coordinates
 
-class Fox(game: Game) : Animal(), ActionSpecificity {
+class Fox(
+    game: Game,
+    baseX: Int? = null,
+    baseY: Int? = null
+) : Animal(), ActionSpecificity {
 
     init {
         this.power = 3
         this.initiative = 7
         this.game = game
-        this.spawn()
+        this.spawn(baseX, baseY)
         this.icon = "f"
     }
 
     override fun reproduce(): Fox {
-        return Fox(this.game!!)
+        return Fox(this.game!!, this.coordinates.x, this.coordinates.y)
     }
 
     override fun useActionSpecificity(newCoordinates: Coordinates?) {

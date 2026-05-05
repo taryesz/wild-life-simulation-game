@@ -3,11 +3,7 @@ package game
 import organism.animal.Wolf
 import organism.Organism
 import organism.Organisms
-import organism.animal.Antelope
-import organism.animal.Fox
-import organism.animal.Sheep
-import organism.animal.Turtle
-import kotlin.random.Random
+import organism.plant.Belladonna
 import kotlin.system.exitProcess
 
 class Game {
@@ -31,14 +27,6 @@ class Game {
         private set
 
     private val specificOrganismKindLimit = 4
-    private val availableOrganismTypes: List<Organisms> = listOf(
-        Organisms.WOLF,
-        Organisms.SHEEP,
-        Organisms.CYBER_SHEEP,
-        Organisms.ANTELOPE,
-        Organisms.FOX,
-        Organisms.TURTLE
-    )
 
     fun start() {
         // get user input - board size
@@ -106,17 +94,28 @@ class Game {
 
     private fun spawnOrganisms() {
 
-        for (organismType in this.availableOrganismTypes) {
-            //repeat(Random.nextInt(2, this.specificOrganismKindLimit)) {
+        for (organismType in Organisms.entries) {
+            // repeat(Random.nextInt(2, this.specificOrganismKindLimit)) {
+
+            repeat(1) {
                 when (organismType) {
+
+                    // Animals
                     Organisms.WOLF -> organisms.add(Wolf(this))
                     Organisms.SHEEP -> null//organisms.add(Sheep(this))
                     Organisms.FOX -> null//organisms.add(Fox(this))
                     Organisms.TURTLE -> null//organisms.add(Turtle(this))
-                    Organisms.ANTELOPE -> organisms.add(Antelope(this))
+                    Organisms.ANTELOPE -> null//organisms.add(Antelope(this))
                     Organisms.CYBER_SHEEP -> null
+
+                    // Plants
+                    Organisms.GRASS -> null//organisms.add(Grass(this))
+                    Organisms.SOW_THISTLES -> null//organisms.add(SowThistles(this))
+                    Organisms.GUARANA -> null//organisms.add(Guarana(this))
+                    Organisms.BELLADONNA -> organisms.add(Belladonna(this))
+
                 }
-            //}
+            }
         }
 
     }

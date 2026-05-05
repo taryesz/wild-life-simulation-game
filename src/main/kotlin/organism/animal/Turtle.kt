@@ -8,18 +8,22 @@ import organism.Coordinates
 import organism.Organism
 import kotlin.random.Random
 
-class Turtle(game: Game) : Animal(), ActionSpecificity, CollisionSpecificity {
+class Turtle(
+    game: Game,
+    baseX: Int? = null,
+    baseY: Int? = null
+) : Animal(), ActionSpecificity, CollisionSpecificity {
 
     init {
         this.power = 2
         this.initiative = 1
         this.game = game
-        this.spawn()
+        this.spawn(baseX, baseY)
         this.icon = "t"
     }
 
     override fun reproduce(): Turtle {
-        return Turtle(this.game!!)
+        return Turtle(this.game!!, this.coordinates.x, this.coordinates.y)
     }
 
     override fun useActionSpecificity(newCoordinates: Coordinates?) {

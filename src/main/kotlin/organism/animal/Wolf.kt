@@ -2,18 +2,22 @@ package organism.animal
 
 import game.Game
 
-class Wolf(game: Game) : Animal() {
+class Wolf(
+    game: Game,
+    baseX: Int? = null,
+    baseY: Int? = null
+) : Animal() {
 
     init {
         this.power = 9
         this.initiative = 5
         this.game = game
-        this.spawn()
+        this.spawn(baseX, baseY)
         this.icon = "w"
     }
 
     override fun reproduce(): Wolf {
-        return Wolf(this.game!!)
+        return Wolf(this.game!!, this.coordinates.x, this.coordinates.y)
     }
 
 }

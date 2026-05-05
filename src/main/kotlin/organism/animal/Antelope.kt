@@ -8,18 +8,22 @@ import organism.Coordinates
 import organism.Organism
 import kotlin.random.Random
 
-class Antelope(game: Game) : Animal(), ActionSpecificity, CollisionSpecificity {
+class Antelope(
+    game: Game,
+    baseX: Int? = null,
+    baseY: Int? = null
+) : Animal(), ActionSpecificity, CollisionSpecificity {
 
     init {
         this.power = 4
         this.initiative = 4
         this.game = game
-        this.spawn()
+        this.spawn(baseX, baseY)
         this.icon = "a"
     }
 
     override fun reproduce(): Antelope {
-        return Antelope(this.game!!)
+        return Antelope(this.game!!, this.coordinates.x, this.coordinates.y)
     }
 
     override fun useActionSpecificity(newCoordinates: Coordinates?) {
