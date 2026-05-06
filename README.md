@@ -41,11 +41,11 @@ Next, the game will prompt you to type either `q` (to quit) or `n` (to perform n
 
 If you provide an invalid input, the game will ask you to try again.
 
-By typing `n`, all animals make a move sequentially. The order depends on each animal's "initiative" property - those with the highest one make their move as the first ones, then those with the lower "initiative" property, and so on.
+By typing `n`, all animals make a move sequentially. The order depends on each animal's `initiative` property - those with the highest one make their move as the first ones, then those with the lower `initiative` property, and so on.
 
-The game then checks for collisions. If any detected, the game checks both organisms types: if the organisms are of the same type, they multiply. However, if they are of different types, they start "fighting".
+The game then checks for collisions. If any detected, the game checks both organisms types: if the organisms are of the same type, they multiply. However, if they are of different types, they start fighting.
 
-An organism with higher "power" property wins and eliminates its colliding organism. If the organisms have the same "power" property, the one that moved most recently wins.
+An organism with a higher `power` property wins and eliminates its colliding organism. If the organisms have the same `power` property, the one that moved most recently wins.
 
 There are exceptions, though. Some organisms have their special abilities:
 
