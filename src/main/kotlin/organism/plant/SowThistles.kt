@@ -20,8 +20,8 @@ class SowThistles(
         this.icon = "S"
     }
 
-    override fun reproduce(): SowThistles {
-        return SowThistles(this.game!!, this.coordinates.x, this.coordinates.y)
+    override fun act() {
+        this.useActionSpecificity()
     }
 
     override fun useActionSpecificity(newCoordinates: Coordinates?) {
@@ -29,15 +29,13 @@ class SowThistles(
 
         if (Random.nextDouble() < probability) {
             Logger.log("multiplying...", this::class)
-            val babyOrganism: SowThistles = this.reproduce()
-            this.game!!.organismsToAdd.add(babyOrganism)
+            val babyOrganism = this.reproduce()
+            this.game!!.population.add(babyOrganism)
             return
         }
 
     }
 
-    override fun act() {
-        this.useActionSpecificity()
-    }
+    override val organismFactory = ::SowThistles
 
 }

@@ -22,8 +22,9 @@ class Antelope(
         this.icon = "a"
     }
 
-    override fun reproduce(): Antelope {
-        return Antelope(this.game!!, this.coordinates.x, this.coordinates.y)
+    override fun act() {
+        val newCoordinates: Coordinates = this.move()
+        this.useActionSpecificity(newCoordinates)
     }
 
     override fun useActionSpecificity(newCoordinates: Coordinates?) {
@@ -33,11 +34,6 @@ class Antelope(
             this.updateCoordinates(this.move(newCoordinates.x, newCoordinates.y))
         }
 
-    }
-
-    override fun act() {
-        val newCoordinates: Coordinates = this.move()
-        this.useActionSpecificity(newCoordinates)
     }
 
     override fun useCollisionSpecificity(collidingOrganism: Organism) {
@@ -52,8 +48,10 @@ class Antelope(
             return
         }
 
-        this.game!!.organismsToRemove.add(this)
+        this.game!!.population.remove(this)
 
     }
+
+    override val organismFactory = ::Antelope
 
 }

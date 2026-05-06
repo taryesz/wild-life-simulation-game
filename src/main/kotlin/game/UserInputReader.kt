@@ -1,6 +1,6 @@
 package game
 
-object UserInput {
+object UserInputReader {
 
     fun get(comparator: (String) -> Boolean): String {
         while(true) {

@@ -23,7 +23,7 @@ class Board(val game: Game) {
 
     private fun readSingularSize(): Int {
 
-        val size = UserInput.get { userInput ->
+        val size = UserInputReader.get { userInput ->
             var isSatisfactoryValue = false
             when {
                 userInput == "" -> Logger.log("Please enter your input.", this::class)
@@ -48,7 +48,7 @@ class Board(val game: Game) {
             for (x in 0 until boardWidth!!) {
                 print("|")
 
-                val organism = this.game.organisms.find { it.coordinates.x == x && it.coordinates.y == y }
+                val organism = this.game.population.find(x, y)
 
                 if (organism != null) {
                     organism.draw()

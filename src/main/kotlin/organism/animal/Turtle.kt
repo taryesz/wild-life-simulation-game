@@ -22,8 +22,8 @@ class Turtle(
         this.icon = "t"
     }
 
-    override fun reproduce(): Turtle {
-        return Turtle(this.game!!, this.coordinates.x, this.coordinates.y)
+    override fun act() {
+        this.useActionSpecificity()
     }
 
     override fun useActionSpecificity(newCoordinates: Coordinates?) {
@@ -37,10 +37,6 @@ class Turtle(
 
     }
 
-    override fun act() {
-        this.useActionSpecificity()
-    }
-
     override fun useCollisionSpecificity(collidingOrganism: Organism) {
 
         // Odpiera ataki zwierząt o
@@ -50,14 +46,17 @@ class Turtle(
         if (collidingOrganism.power!! < 5) {
             Logger.log("repelled the attack of ${collidingOrganism::class.simpleName.toString().uppercase()}!", this::class)
             if (collidingOrganism is Animal) {
+                // The attacking organism goes back to its original spot
                 collidingOrganism.coordinates.x = collidingOrganism.previousCoordinates.x
                 collidingOrganism.coordinates.y = collidingOrganism.previousCoordinates.y
             }
             return
         }
 
-        this.game!!.organismsToRemove.add(this)
+        this.game!!.population.remove(this)
 
     }
+
+    override val organismFactory = ::Turtle
 
 }

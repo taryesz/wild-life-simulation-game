@@ -19,8 +19,9 @@ class Fox(
         this.icon = "f"
     }
 
-    override fun reproduce(): Fox {
-        return Fox(this.game!!, this.coordinates.x, this.coordinates.y)
+    override fun act() {
+        val newCoordinates: Coordinates = this.move()
+        this.useActionSpecificity(newCoordinates)
     }
 
     override fun useActionSpecificity(newCoordinates: Coordinates?) {
@@ -31,14 +32,10 @@ class Fox(
         newCoordinates?.let {
             var danger = false
 
-            for (organism in this.game!!.organisms) {
-                if (this !== organism &&
-                    organism.coordinates.x == newCoordinates.x &&
-                    organism.coordinates.y == newCoordinates.y &&
-                    organism.power!! > this.power!!)
-                {
+            val potentiallyDangerousOrganism = this.game!!.population.find(newCoordinates.x, newCoordinates.y)
+            potentiallyDangerousOrganism?.let {
+                if (it.power!! > this.power!! && it !== this) {
                     danger = true
-                    break
                 }
             }
 
@@ -55,9 +52,6 @@ class Fox(
 
     }
 
-    override fun act() {
-        val newCoordinates: Coordinates = this.move()
-        this.useActionSpecificity(newCoordinates)
-    }
+    override val organismFactory = ::Fox
 
 }

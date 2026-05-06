@@ -19,13 +19,10 @@ class Belladonna(
         this.icon = "B"
     }
 
-    override fun reproduce(): Belladonna {
-        return Belladonna(this.game!!, this.coordinates.x, this.coordinates.y)
-    }
-
     override fun useCollisionSpecificity(collidingOrganism: Organism) {
         Logger.log("has no mercy and kills ${collidingOrganism::class.simpleName.toString().uppercase()}!", this::class)
-        this.game!!.organismsToRemove.add(collidingOrganism)
+        this.game!!.population.remove(collidingOrganism)
     }
 
+    override val organismFactory = ::Belladonna
 }

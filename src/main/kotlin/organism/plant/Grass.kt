@@ -16,8 +16,6 @@ class Grass(
         this.icon = "G"
     }
 
-    override fun reproduce(): Grass {
-        return Grass(this.game!!, this.coordinates.x, this.coordinates.y)
-    }
+    override val organismFactory = ::Grass
 
 }

@@ -16,8 +16,6 @@ class Sheep(
         this.icon = "s"
     }
 
-    override fun reproduce(): Sheep {
-        return Sheep(this.game!!, this.coordinates.x, this.coordinates.y)
-    }
+    override val organismFactory = ::Sheep
 
 }

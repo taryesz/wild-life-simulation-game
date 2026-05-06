@@ -23,18 +23,8 @@ class Heracleum(
         this.icon = "H"
     }
 
-    override fun reproduce(): Heracleum {
-        return Heracleum(this.game!!, this.coordinates.x, this.coordinates.y)
-    }
-
-    override fun useCollisionSpecificity(collidingOrganism: Organism) {
-        if (collidingOrganism !is CyberSheep) {
-            Logger.log("has no mercy and kills ${collidingOrganism::class.simpleName.toString().uppercase()}!", this::class)
-            this.game!!.organismsToRemove.add(collidingOrganism)
-            return
-        }
-        // a cyber sheep kills the heracleum
-        this.game!!.organismsToRemove.add(this)
+    override fun act() {
+        this.useActionSpecificity()
     }
 
     override fun useActionSpecificity(newCoordinates: Coordinates?) {
@@ -54,14 +44,22 @@ class Heracleum(
 
             if (target is Animal && target !is CyberSheep) {
                 Logger.log("kills everyone who approaches it...including ${target::class.simpleName.toString().uppercase()}.", this::class)
-                this.game!!.organismsToRemove.add(target)
+                this.game!!.population.remove(target)
             }
         }
 
     }
 
-    override fun act() {
-        this.useActionSpecificity()
+    override fun useCollisionSpecificity(collidingOrganism: Organism) {
+        if (collidingOrganism !is CyberSheep) {
+            Logger.log("has no mercy and kills ${collidingOrganism::class.simpleName.toString().uppercase()}!", this::class)
+            this.game!!.population.remove(collidingOrganism)
+            return
+        }
+        // a cyber sheep kills the heracleum
+        this.game!!.population.remove(this)
     }
+
+    override val organismFactory = ::Heracleum
 
 }
